@@ -1,0 +1,166 @@
+Pods:-
+
+Pods are the smallest deployable units of computing that you can create and manage in Kubernetes.
+
+
+kubectl run nginx --image nginx ( Create an NGINX Pod)
+
+Use kubectl create:
+
+kubectl create deployment nginx --image=nginx ( To create a deployment using imperative command )
+
+
+kubectl get pods ( To get pod information)
+
+kubectl describe pod nginx
+
+kubectl get pods -o wide ( it gives status of pods)
+
+YAML in kubernetes (This are 4 specific fields in yaml file)
+
+apiVersion:
+kind:
+metadata:
+
+spec:
+
+vi pod.yml
+
+apiVersion: V1
+kind: Pod
+metadata:
+  name: nginx
+  labels: 
+    app: nginx
+    tier: frontend
+spec:
+  containers: 
+  - name: nginx
+    image: nginx
+  - name: busybox
+    image: busybox
+
+kubectl apply -f pod.yml
+
+Replicationcontroller ( Replicationcontroller is older one)
+
+apiVersion: V1
+kind: ReplicationController
+metdata:
+  name: myapp-rc
+  labels: 
+     app: myapp
+     type: front-end
+spec:
+  template:
+
+    metadata: 
+      name: myapp-pod 
+      labels:
+         app: myapp
+         type: front-end
+    spec:
+      containers:
+      - name: nginx-container
+        image: nginx
+
+  replicas: 3
+
+
+apiVersion:apps/V1
+kind: Replication Set
+metdata:
+  name: myapp-replicaset
+  labels: 
+     app: myapp
+     type: front-end
+spec:
+  template:
+
+    metadata: 
+      name: myapp-pod 
+      labels:
+         app: myapp
+         type: front-end
+    spec:
+      containers:
+      - name: nginx-container
+        image: nginx
+
+  replicas: 3
+  selector: 
+    matchLabels:
+       type: front-end
+
+matchlabels: They are key-value pairs that can be attached to any Kubernetes object
+They are used to introduce some kind of organization structure in these objects
+
+kubectl create -f replicaset-defintion.yml
+kubectl get replicaset
+kubectl get pods
+kubectl delete replicaset myapp-replicaset
+
+If you increase replicas from 2 to 4 you need to use this command
+kubectl replace -f replicaset-definition.yml
+kubectl scale -replicas=6 -f replicaset-definition.yml
+
+depolyment
+
+
+
+how to see all object created at once 
+
+kubectl get all
+  
+create file as depolyment.yaml
+
+apiVersion:apps/V1
+kind: Deployment
+metdata:
+  name: myapp-deployment
+  labels: 
+     app: myapp
+     type: front-end
+spec:
+  template:
+
+    metadata: 
+      name: myapp-pod 
+      labels:
+         app: myapp
+         type: front-end
+    spec:
+      containers:
+      - name: nginx-container
+        image: nginx
+
+  replicas: 3
+  selector: 
+    matchLabels:
+       type: front-end
+
+kubectl create -f deployment-definition.yml
+kubectl get deployments
+kubectl get replicaset
+kubectl get pods
+
+Rollout command :- 
+create :-
+kubectl create -f deployment-definition.yml
+
+Get :-
+kubectl get deployments
+
+update:-
+
+kubectl apply -f  deployment-definition.yml
+
+status 
+
+kubectl set image deployment/myapp-deployment nginx=nginx:1.9.1
+
+Rollout :-
+
+kubectl rollout status deployment/myapp-deployment
+kubectl rollout history deployment/myapp-deployment
+kubectl rollout undo deployment/myapp-depolyment
